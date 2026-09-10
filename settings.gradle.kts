@@ -1,0 +1,1 @@
+rootProject.name = "ITMO_FUZZING_2026"
