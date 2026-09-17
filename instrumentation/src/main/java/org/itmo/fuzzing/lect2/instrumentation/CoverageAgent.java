@@ -8,20 +8,46 @@ import java.security.ProtectionDomain;
 
 public class CoverageAgent {
 
+    /**
+     * Class name prefixes (in internal JVM form, e.g. {@code org/jsoup}) that get instrumented.
+     * Can be overridden with a comma-separated agent argument:
+     * {@code -javaagent:coverage-agent.jar=org/jsoup,org/itmo/fuzzing/lab1}
+     */
+    private static final String[] DEFAULT_INCLUDES = {
+            "org/jsoup",
+            "org/itmo/fuzzing/lab1",
+    };
+
     public static void premain(String agentArgs, Instrumentation inst) {
+
+        final String[] includes = parseIncludes(agentArgs);
 
         inst.addTransformer(new ClassFileTransformer() {
             @Override
             public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined,
                                     ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-                if (className.contains("org/jsoup") && !className.contains("CoverageAgent")) {
-                    return asmTransformClass(className, classfileBuffer);
-//                    return asmTransformClass(className, classfileBuffer);
+                if (className == null || className.contains("instrumentation/Coverage")) {
+                    return null;
+                }
+                for (String include : includes) {
+                    if (className.contains(include)) {
+                        return asmTransformClass(className, classfileBuffer);
+                    }
                 }
                 return null;
             }
         });
 
+    }
+
+    private static String[] parseIncludes(String agentArgs) {
+        if (agentArgs == null || agentArgs.isBlank()) {
+            return DEFAULT_INCLUDES;
+        }
+        return java.util.Arrays.stream(agentArgs.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toArray(String[]::new);
     }
 
 //    private static byte[] asmTransformClass(String className, byte[] classfileBuffer) {

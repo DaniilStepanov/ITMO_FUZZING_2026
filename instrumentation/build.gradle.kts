@@ -16,7 +16,7 @@ java {
 }
 
 dependencies {
-    implementation("org.ow2.asm:asm:9.7")
+    implementation("org.ow2.asm:asm:9.9")
 }
 
 tasks.register<Jar>("agentJar") {

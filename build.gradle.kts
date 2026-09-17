@@ -17,7 +17,7 @@ java {
 
 dependencies {
     implementation(project(":instrumentation"))
-    implementation("org.ow2.asm:asm:9.7")
+    implementation("org.ow2.asm:asm:9.9")
     implementation("org.jsoup:jsoup:1.18.1")
 
     testImplementation(platform("org.junit:junit-bom:6.0.0"))
